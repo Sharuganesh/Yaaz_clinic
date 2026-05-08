@@ -1,0 +1,92 @@
+{
+  "theme": {
+    "archetype": "1 - Organic & Earthy (Modified for Medical Trust)",
+    "mode": "light",
+    "colors": {
+      "primary": "#1B4B5A",
+      "primary_foreground": "#FFFFFF",
+      "secondary": "#E87722",
+      "secondary_foreground": "#FFFFFF",
+      "background": "#F8FAFC",
+      "surface": "#FFFFFF",
+      "surface_glass": "rgba(255, 255, 255, 0.7)",
+      "text_main": "#0F172A",
+      "text_muted": "#475569",
+      "border": "rgba(27, 75, 90, 0.1)"
+    }
+  },
+  "typography": {
+    "heading_font": "Outfit, sans-serif",
+    "body_font": "Manrope, sans-serif",
+    "rules": {
+      "h1": "text-4xl sm:text-5xl lg:text-6xl tracking-tight font-bold text-primary",
+      "h2": "text-2xl sm:text-3xl lg:text-4xl tracking-tight font-semibold text-primary",
+      "h3": "text-xl sm:text-2xl font-medium text-text_main",
+      "body": "text-base leading-relaxed text-text_muted",
+      "labels": "text-sm uppercase tracking-[0.2em] font-semibold text-secondary"
+    }
+  },
+  "layout_and_spacing": {
+    "container_padding": "px-6 md:px-12 lg:px-24",
+    "section_spacing": "py-24 md:py-32",
+    "grid_strategy": "bento-inspired asymmetrical layouts where possible, generous gaps (gap-8 to gap-12)",
+    "border_radius": "rounded-2xl"
+  },
+  "motion_and_interactions": {
+    "parallax": "Heavy use of framer-motion useScroll and useTransform for background and floating 3D elements",
+    "entrance": "Staggered fade-up for lists, scale-in for images",
+    "hover": "Subtle translate-y-1, increased shadow on cards; scale 1.05 on images",
+    "buttons": "Primary button in secondary color (#E87722) with hover brightness increase; Outline button in primary color (#1B4B5A)"
+  },
+  "components_strategy": {
+    "header": "Crystal glassmorphism (backdrop-blur-xl bg-white/70 border-b border-primary/10), sticky top z-50",
+    "hero": "Full height min-h-[90vh], complex z-index layering for 3D floating elements (stethoscope, pill, cross), clear H1 and double CTA.",
+    "services_cards": "Flat background (bg-white), 1px border, subtle shadow-sm, hover:shadow-xl hover:-translate-y-2 transition-all duration-300. Icons in secondary color.",
+    "contact_form": "Shadcn based input/textarea/button, clear validation, send email action (mocked or api).",
+    "whatsapp_float": "Fixed bottom-6 right-6 z-50, vibrant green or theme secondary color, pulse animation.",
+    "icons_library": "@phosphor-icons/react (Duotone)"
+  },
+  "media": {
+    "hero_background": {
+      "url": "https://static.prod-images.emergentagent.com/jobs/8085276d-30f9-4674-8efa-761575ebd0f4/images/a9bc134f87176e79926ec5d212e12ae19c10abe0a994f1b7062135663ab72921.png",
+      "description": "Modern premium clinic interior"
+    },
+    "floating_3d_elements": [
+      {
+        "url": "https://static.prod-images.emergentagent.com/jobs/8085276d-30f9-4674-8efa-761575ebd0f4/images/80c09712fa5efbee2b0afbec9a068afc821be06ae59c895461cb87e65b6e6158.png",
+        "description": "3D Glossy Stethoscope"
+      },
+      {
+        "url": "https://static.prod-images.emergentagent.com/jobs/8085276d-30f9-4674-8efa-761575ebd0f4/images/88939e07063faf69c29b58673a2d1f1d5a522dde602f4e3ef11af58daf20ddc9.png",
+        "description": "3D Medical Cross"
+      },
+      {
+        "url": "https://static.prod-images.emergentagent.com/jobs/8085276d-30f9-4674-8efa-761575ebd0f4/images/225e8a7e4d922848cfd2d7a40efc19852f5726b6d4ac59d33d5b513686304a89.png",
+        "description": "3D Pill"
+      }
+    ],
+    "doctor_karthik_context": {
+      "url": "https://images.pexels.com/photos/14558560/pexels-photo-14558560.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Doctor checking blood pressure"
+    },
+    "doctor_shivani_context": {
+      "url": "https://images.unsplash.com/photo-1632052998047-1faea5c31145?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzZ8MHwxfHNlYXJjaHwzfHxwZWRpYXRyaWNpYW4lMjBiYWJ5fGVufDB8fHx8MTc3ODI1MDEzNnww&ixlib=rb-4.1.0&q=85",
+      "description": "Pediatrician checking baby"
+    },
+    "general_care_context": {
+      "url": "https://images.pexels.com/photos/14558557/pexels-photo-14558557.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "General health checkup"
+    }
+  },
+  "instructions_to_main_agent": [
+    "Install required dependencies: yarn add @phosphor-icons/react framer-motion clsx tailwind-merge",
+    "Implement Framer Motion extensively for scroll animations: Use 'useScroll' and 'useTransform' mapped to mouse position and scroll depth for the 3D elements in the Hero section.",
+    "Structure the project into distinct sections components (Hero, About, Services, Doctors, Testimonials, Facilities, Contact) and assemble them in the main page.",
+    "Ensure the hero section uses the clinic interior as a very subtle, low opacity background, with the 3D floating elements (pill, stethoscope, cross) moving dynamically at different z-indexes on scroll/mouse move.",
+    "Integrate the exact provided logo colors (#1B4B5A and #E87722) accurately across buttons, accents, and icons.",
+    "Include a fixed floating WhatsApp CTA button at the bottom right that redirects to: https://wa.me/917904203074",
+    "Design the doctors section as a split-screen or large profile cards featuring Dr. Karthik and Dr. Shivani.",
+    "Ensure all components are mobile responsive.",
+    "Add data-testid to all interactive components like buttons, links, and forms."
+  ]
+}
