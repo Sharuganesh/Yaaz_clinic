@@ -1,72 +1,112 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, HTTPException
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
+import smtplib
+import asyncio
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from pydantic import BaseModel, Field, ConfigDict
-from typing import List
+from pydantic import BaseModel, Field, EmailStr
+from typing import Optional
 import uuid
 from datetime import datetime, timezone
-
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# MongoDB connection
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
-# Create the main app without a prefix
 app = FastAPI()
-
-# Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
+executor = ThreadPoolExecutor(max_workers=2)
 
-# Define Models
-class StatusCheck(BaseModel):
-    model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
-    
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+CLINIC_EMAIL = "YAAZHSPECIALITYCLINIC@gmail.com"
+EMAIL_USER = os.environ.get('EMAIL_USER', '')
+EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD', '')
+
+
+class ContactMessage(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    name: str
+    email: str
+    phone: Optional[str] = None
+    message: str
+    timestamp: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
-class StatusCheckCreate(BaseModel):
-    client_name: str
 
-# Add your routes to the router instead of directly to app
+class ContactInput(BaseModel):
+    name: str
+    email: str
+    phone: Optional[str] = None
+    message: str
+
+
+def send_email_sync(name: str, email: str, phone: str, message: str) -> bool:
+    if not EMAIL_USER or not EMAIL_PASSWORD:
+        logger.info("Email not configured — message stored in DB only")
+        return False
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = EMAIL_USER
+        msg['To'] = CLINIC_EMAIL
+        msg['Subject'] = f"New Contact Form: {name}"
+        body = f"""New message from Yaazh Clinic website:\n
+Name: {name}
+Email: {email}
+Phone: {phone or 'Not provided'}
+Message: {message}
+        """
+        msg.attach(MIMEText(body, 'plain'))
+        with smtplib.SMTP('smtp.gmail.com', 587) as server:
+            server.starttls()
+            server.login(EMAIL_USER, EMAIL_PASSWORD)
+            server.sendmail(EMAIL_USER, CLINIC_EMAIL, msg.as_string())
+        return True
+    except Exception as e:
+        logger.error(f"Email send failed: {e}")
+        return False
+
+
 @api_router.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "Yaazh Speciality Clinic API"}
 
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.model_dump()
-    status_obj = StatusCheck(**status_dict)
-    
-    # Convert to dict and serialize datetime to ISO string for MongoDB
-    doc = status_obj.model_dump()
-    doc['timestamp'] = doc['timestamp'].isoformat()
-    
-    _ = await db.status_checks.insert_one(doc)
-    return status_obj
 
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    # Exclude MongoDB's _id field from the query results
-    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
-    
-    # Convert ISO string timestamps back to datetime objects
-    for check in status_checks:
-        if isinstance(check['timestamp'], str):
-            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
-    
-    return status_checks
+@api_router.post("/contact")
+async def submit_contact(data: ContactInput):
+    contact = ContactMessage(
+        name=data.name,
+        email=data.email,
+        phone=data.phone,
+        message=data.message
+    )
+    doc = contact.model_dump()
+    await db.contact_messages.insert_one(doc)
 
-# Include the router in the main app
+    loop = asyncio.get_event_loop()
+    email_sent = await loop.run_in_executor(
+        executor, send_email_sync, data.name, data.email, data.phone or '', data.message
+    )
+
+    return {"success": True, "message": "Message received. We'll get back to you shortly.", "email_sent": email_sent}
+
+
+@api_router.get("/contact")
+async def get_contacts():
+    messages = await db.contact_messages.find({}, {"_id": 0}).to_list(500)
+    return messages
+
+
 app.include_router(api_router)
 
 app.add_middleware(
@@ -77,12 +117,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
