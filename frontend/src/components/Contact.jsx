@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Phone, Mail, MapPin, MessageCircle, Send, CheckCircle, AlertCircle } from 'lucide-react';
-import axios from 'axios';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+const supportEmail = 'YAAZHSPECIALITYCLINIC@gmail.com';
 
 const contactInfo = [
   {
@@ -37,21 +35,19 @@ export default function Contact() {
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
       setError('Please fill in Name, Email, and Message.');
       return;
     }
     setError('');
-    setStatus('loading');
-    try {
-      await axios.post(`${API}/contact`, form);
-      setStatus('success');
-      setForm({ name: '', email: '', phone: '', message: '' });
-    } catch {
-      setStatus('error');
-    }
+    const subject = `Contact request from ${form.name}`;
+    const body = `Name: ${form.name}\nEmail: ${form.email}\nPhone: ${form.phone || 'N/A'}\n\nMessage:\n${form.message}`;
+    const mailtoUrl = `mailto:${supportEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailtoUrl;
+    setStatus('success');
+    setForm({ name: '', email: '', phone: '', message: '' });
   };
 
   return (

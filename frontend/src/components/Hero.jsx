@@ -130,7 +130,7 @@ export default function Hero() {
         >
           <span className="w-2 h-2 rounded-full bg-[#E87722] pulse-glow" />
           <span className="text-white/90 text-xs sm:text-sm font-semibold tracking-widest uppercase font-manrope">
-            Trusted Healthcare in Coimbatore
+            Trusted Speciality Clinic in Coimbatore
           </span>
         </motion.div>
 
@@ -141,7 +141,7 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 0.25, ease: 'easeOut' }}
           className="text-4xl sm:text-5xl lg:text-7xl font-black text-white leading-tight mb-6 font-outfit text-center lg:text-left max-w-3xl"
         >
-          Your Health,{' '}
+          Yaazh Speciality Clinic —
           <span
             style={{
               background: 'linear-gradient(90deg, #E87722, #f5a05a)',
@@ -150,7 +150,7 @@ export default function Hero() {
               backgroundClip: 'text',
             }}
           >
-            Our Priority.
+            Best Clinic in Coimbatore.
           </span>
         </motion.h1>
 
@@ -161,7 +161,7 @@ export default function Hero() {
           transition={{ duration: 0.7, delay: 0.45 }}
           className="text-base sm:text-lg text-white/75 max-w-xl mb-10 text-center lg:text-left leading-relaxed font-manrope"
         >
-          Expert care in General Medicine, Diabetes Management & Pediatrics. Serving families across Ganapathy, Coimbatore with compassion and precision.
+          Expert care in General Medicine, Diabetes Management & Pediatrics. Serving families across Ganapathy, Coimbatore with compassionate speciality clinic services for children, adults and seniors.
         </motion.p>
 
         {/* CTA Buttons */}
